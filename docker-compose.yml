@@ -5,12 +5,16 @@ services:
     image: postgres
     container_name: postgres_container
     restart: always
+    ports:
+      - 5432:5432
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: Team1
+      POSTGRES_PASSWORD: password1
+      POSTGRES_DB: DejaBru
 
   adminer:
     image: adminer
     container_name: adminer_container2
     restart: always
     ports:
-      - 8081:8081
+      - 8080:8080
