@@ -66,12 +66,47 @@ def execute_query(sql):
 
 def chesterfield_table_creation():
     sql = '''CREATE TABLE chesterfield(
-        date_and_time VARCHAR(255) NOT NULL,
-        branch_name VARCHAR(255) NOT NULL,
-        order_products VARCHAR(500) NOT NULL,
-        total_price VARCHAR(255) NOT NULL,
-        payment_type VARCHAR(255) NOT NULL
-        );'''
+            date_and_time VARCHAR(255) NOT NULL,
+            branch_name VARCHAR(255) NOT NULL,
+            order_products VARCHAR(500) NOT NULL,
+            total_price VARCHAR(255) NOT NULL,
+            payment_type VARCHAR(255) NOT NULL
+            );
+
+            CREATE TABLE branches(
+            branch_id SERIAL NOT NULL PRIMARY KEY,
+            branch_name VARCHAR(255) NOT NULL
+            );
+
+            CREATE TABLE customers(
+            customer_id SERIAL NOT NULL PRIMARY KEY,
+            customer_name VARCHAR(255) NOT NULL,
+            branch_id INT NOT NULL
+            );
+
+            CREATE TABLE products(
+            product_id SERIAL NOT NULL PRIMARY KEY,
+            product_name VARCHAR(500) NOT NULL,
+            product_price VARCHAR(255) NOT NULL
+            );
+
+            CREATE TABLE transactions(
+            transactions_id INT NOT NULL PRIMARY KEY,
+            branch_id INT NOT NULL,
+            date DATE NOT NULL,
+            time TIMESTAMP NOT NULL,
+            customer_name VARCHAR(255) NOT NULL,
+            payment_type VARCHAR(255) NOT NULL,
+            total_price VARCHAR(255) NOT NULL
+            );
+        
+            CREATE TABLE basket(
+            order_id SERIAL NOT NULL PRIMARY KEY,
+            product_id INT NOT NULL REFERENCES products(product_id),
+            quantity INT NOT NULL
+            );'''
+
+
     execute_query(sql) #Test parameters so far, ALTER table or change function code once we want it cleaner.
     ### changed it to (500) because something went past the 255 on order_products. (wouldn't let me complete a load)
 
