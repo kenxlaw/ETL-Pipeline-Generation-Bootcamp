@@ -66,6 +66,7 @@ def execute_query(sql):
 
 def chesterfield_table_creation():
     sql = '''CREATE TABLE chesterfield(
+
             date_and_time VARCHAR(255) NOT NULL,
             branch_name VARCHAR(255) NOT NULL,
             order_products VARCHAR(500) NOT NULL,
