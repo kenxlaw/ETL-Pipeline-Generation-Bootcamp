@@ -11,6 +11,8 @@ services:
       POSTGRES_USER: team1
       POSTGRES_PASSWORD: password1
       POSTGRES_DB: dejabru
+    volumes:
+      - db-data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
