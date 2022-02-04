@@ -6,6 +6,7 @@ import psycopg2.extras as extras
 from dotenv import load_dotenv
 import uuid
 
+
 load_dotenv()
 host = os.environ.get("POSTGRES_HOST")
 user = os.environ.get("POSTGRES_USER")
@@ -148,4 +149,4 @@ def main():
     conn.close()
 
 if __name__ == "__main__":
-    main()
+
