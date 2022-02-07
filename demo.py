@@ -62,26 +62,26 @@ def transform(filename):
         df = df.dropna()
         # end of previous comment
         # create uuid for each transaction
-        df['uuid'] = [uuid.uuid4() for _ in range (len(df.index))]
+        df['order_id'] = [uuid.uuid4() for _ in range (len(df.index))]
         column_names = [
-            'uuid',
+            'order_id',
             'timestamp', 
             'order_products',
             'total_price',
             'payment_type',]
         df = df.reindex(columns=column_names)
         # explode data to create orders table
-        orders = pd.DataFrame(df.order_products.str.split(", ").tolist(), index = df.uuid).stack()
-        orders = orders.reset_index([0,'uuid'])
-        orders.columns = ['uuid','product']
-        orders = pd.merge(orders, df[['timestamp','total_price','payment_type','uuid']], on='uuid', how='left')
+        orders = pd.DataFrame(df.order_products.str.split(", ").tolist(), index = df.order_id).stack()
+        orders = orders.reset_index([0,'order_id'])
+        orders.columns = ['order_id','product']
+        orders = pd.merge(orders, df[['timestamp','total_price','payment_type','order_id']], on='order_id', how='left')
         # add product_id
         orders['product_id'] = orders['product'].apply(lambda x: str(int(sha256(x.encode('utf-8')).hexdigest(), 16))[:10])
         # add product_price
         orders[['product_name', 'product_price']] = orders['product'].str.rsplit(' - ', 1, expand=True)
         orders = orders.drop(columns=['product'])
         # re-index orders table
-        column_names = ['uuid',
+        column_names = ['order_id',
                         'timestamp',
                         'product_id',
                         'product_name',
@@ -90,10 +90,12 @@ def transform(filename):
                         'payment_type']
         orders = orders.reindex(columns=column_names)
         # create order_products table
-        order_products = orders.groupby(['uuid','product_id','product_name','product_price']).size()
+        order_products = orders.groupby(['order_id','product_id']).size()
+        order_products.columns = ['order_id','product_id','quantity']
         # create product table
-        products = order_products.groupby(['product_id','product_name','product_price']).size()
-        print(orders)
+        products = orders[['product_id','product_name','product_price']]
+        # clean orders table according to schema
+        orders = orders.drop(columns=['product_id','product_name','product_price'])
     except Exception as error:
         print("An error occurred: " + str(error))
     return df
@@ -222,3 +224,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
