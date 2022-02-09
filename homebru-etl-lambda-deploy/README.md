@@ -1,10 +1,8 @@
-## IP API Lambda
+## ETL Lambda
 
 ### About
 
-Lambda function which returns the current public IP address of the lambda function by making a request to a third-party IP on the public Internet
-
-Documentation for the API is here [https://www.ipify.org/](https://www.ipify.org/)
+Multiple Lambda functions, one of which creates a bucket, another which creates a trigger and adds permissions and another for processing the data using our previous ETL work
 
 ### Usage
 
@@ -18,5 +16,5 @@ How to Deploy
 
 ### What this stack Creates
 
-- Python lambda function `IpLambdaFunction` 
-- Basic lambda role `IpLambdaFunctionRole` which allows the lambda function to execute and write logs
+- Python lambda function `ETLLambdaFunction` 
+- Basic lambda role `LambdaFunctionRole` which allows the lambda function to execute and write logs, as well as create a new bucket, read and move files through another bucket.
