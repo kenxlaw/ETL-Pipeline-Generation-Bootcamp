@@ -2,7 +2,6 @@ import logging
 import boto3
 import os
 import pandas as pd
-import app.extract_and_transform as extract_and_transform
 
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
@@ -26,6 +25,22 @@ def lambda_handler(event, context):
     print(os.path.isfile('/tmp/chesterfield.csv'))
     
     # This part will be replaced with our ETL code to Transform our cafe data ready for RedShift
-    extract_and_transform.transform(f"/tmp/{object_name}")
+    def extract_and_clean(filename):
+      try:
+          df = pd.read_csv(filename, names=[
+              'timestamp',  
+              'branch_name',
+              'customer_name',
+              'order_products',
+              'total_price',
+              'payment_type',
+              'card_number'])
+          df = df.drop(columns=['branch_name','customer_name','card_number'])
+          df = df.dropna()
+          print(df)
+      except Exception as error:
+          print("An error occurred: " + str(error))
+      return df
+    extract_and_clean(f"/tmp/{object_name}")
 
     # This last part will be the final load into RedShift
