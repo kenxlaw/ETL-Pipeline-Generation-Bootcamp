@@ -11,11 +11,21 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${NamePrefix}-etl-lambda
-      Runtime: python3.7
+      Runtime: python3.9
       Timeout: 5
       Handler: app/homebru_etl_lambda.lambda_handler
       Role: !GetAtt LambdaFunctionRole.Arn
       Code: .deployment/lambda-package.zip
+      Layers:
+        - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_pandas_layer:1
+        - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_psycopg2_layer:1
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue:
+              'network-infra-VPCSGID'
+        SubnetIds:
+          - Fn::ImportValue:
+              !Sub 'network-infra-PrivateSubnet0ID'
   CafeDataBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -44,7 +54,12 @@ Resources:
           Action:
             - sts:AssumeRole
       Path: "/"
-      PermissionsBoundary: !Sub arn:aws:iam::${AWS::AccountId}:policy/ScopePermissions
+      PermissionsBoundary: 
+        !Sub arn:aws:iam::${AWS::AccountId}:policy/ScopePermissions
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
       Policies:
       - PolicyName: LambdaLogsPolicy
         PolicyDocument:
