@@ -1,6 +1,6 @@
 import uuid
 import pandas as pd
-from hashlib import sha256
+from hashlib import sha256, md5
 
 def transform(filename):
     try:
@@ -17,7 +17,10 @@ def transform(filename):
         df = df.dropna()
         # end of previous comment
         # create uuid for each transaction
-        df['order_id'] = [uuid.uuid4() for _ in range (len(df.index))]
+        # df['order_id'] = [uuid.uuid4() for _ in range (len(df.index))]
+        # df['order_id'] = df[['order_time','order_products','total_price','payment_type']].apply(lambda x: str(int(sha256(x.encode('utf-8')).hexdigest(), 16))[:10])
+        # df['order_id'] = df.apply(lambda x: hash(tuple(x), axis = 1))
+        df['order_id'] =  df.apply(lambda x:md5((str(x[0])+str(x[1])).encode('utf8')).hexdigest(), axis=1)
         column_names = [
             'order_id',
             'order_time', 
@@ -79,4 +82,3 @@ def transform(filename):
     return orders_data, order_products_data, products_data
 
 # transform('chesterfield.csv')
-# print(orders, order_products, products)
