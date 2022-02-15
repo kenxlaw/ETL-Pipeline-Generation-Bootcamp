@@ -44,6 +44,7 @@ def transform(filename):
                         'product_id',
                         'quantity']
         order_products_data = order_products.reindex(columns=column_names)
+        orders_products_data = orders_products_data.to_dict()
 
                 
         # sort the orders table to be converted for the products table
@@ -53,6 +54,7 @@ def transform(filename):
                         'product_name',
                         'product_price']
         products_data = products.reindex(columns=column_names)
+        products_data = products_data.to_dict()
 
         orders = orders.drop(columns=['product','product_id','product_name','product_price'])
         # re-index orders table
@@ -62,21 +64,10 @@ def transform(filename):
                         'total_price']
         orders = orders.reindex(columns=column_names)
         orders_data = orders.drop_duplicates()
+        orders_data = orders_data.to_dict()
             
-        # sort the orders table to be converted for the order products table (but keep product_id and product_name temporarily for the quantity column)
-
-        # # print the transformed tables
-        # print("\n---------------------------ORDERS TABLE---------------------------")
-        # print(orders)
-        # print("\n---------------------------ORDER PRODUCTS TABLE---------------------------")
-        # print(order_products)
-        # print("\n---------------------------PRODUCTS TABLE---------------------------")
-        # print(products)
     except Exception as error:
         print("An error occurred: " + str(error))
         
     print(orders_data, order_products_data, products_data)
     return orders_data, order_products_data, products_data
-
-# transform('chesterfield.csv')
-# print(orders, order_products, products)

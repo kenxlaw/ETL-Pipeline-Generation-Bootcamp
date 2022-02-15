@@ -2,6 +2,8 @@ import logging
 import boto3
 import os
 import pandas as pd
+import app.extract_and_transform as extract_and_transform
+import app.database as database
 
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
@@ -25,22 +27,25 @@ def lambda_handler(event, context):
     print(os.path.isfile('/tmp/chesterfield.csv'))
     
     # This part will be replaced with our ETL code to Transform our cafe data ready for RedShift
-    def extract_and_clean(filename):
-      try:
-          df = pd.read_csv(filename, names=[
-              'timestamp',  
-              'branch_name',
-              'customer_name',
-              'order_products',
-              'total_price',
-              'payment_type',
-              'card_number'])
-          df = df.drop(columns=['branch_name','customer_name','card_number'])
-          df = df.dropna()
-          print(df)
-      except Exception as error:
-          print("An error occurred: " + str(error))
-      return df
-    extract_and_clean(f"/tmp/{object_name}")
+    # orders_data, order_products_data, products_data = extract_and_transform.transform(f"/tmp/{object_name}")
 
-    # This last part will be the final load into RedShift
+    # This is needed for credentials to the RedShift database
+    creds = get_ssm_parameters_under_path("/team1/redshift")
+
+    # Try to get this working first and then try the rest
+    # database.persist_products(creds, products_data)
+    database.create_table(creds)
+
+    # database.persist_order_products(creds, transformed_data["order_products_data"])
+    # database.persist_orders(creds, transformed_data["orders_data"])
+
+def get_ssm_parameters_under_path(path: str) -> dict:
+
+    ssm_client = boto3.client("ssm", region_name="eu-west-1")
+    response = ssm_client.get_parameters_by_path(
+        Path=path,
+        Recursive=True,
+        WithDecryption=True
+    )
+    formatted_response = {os.path.basename(x["Name"]):x["Value"] for x in response["Parameters"]}
+    return formatted_response
