@@ -1,6 +1,6 @@
 import uuid
 import pandas as pd
-from hashlib import sha256
+from hashlib import sha256, md5
 
 def transform(filename):
     try:
@@ -16,8 +16,8 @@ def transform(filename):
         df = df.drop(columns=['branch_name','customer_name','card_number'])
         df = df.dropna()
         # end of previous comment
-        # create uuid for each transaction
-        df['order_id'] = [uuid.uuid4() for _ in range (len(df.index))]
+        # create order id for each transaction
+        df['order_id'] =  df.apply(lambda x:md5((str(x[0])+str(x[1])).encode('utf8')).hexdigest(), axis=1)
         column_names = [
             'order_id',
             'order_time', 

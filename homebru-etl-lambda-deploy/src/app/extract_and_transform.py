@@ -16,10 +16,7 @@ def transform(filename):
         df = df.drop(columns=['branch_name','customer_name','card_number'])
         df = df.dropna()
         # end of previous comment
-        # create uuid for each transaction
-        # df['order_id'] = [uuid.uuid4() for _ in range (len(df.index))]
-        # df['order_id'] = df[['order_time','order_products','total_price','payment_type']].apply(lambda x: str(int(sha256(x.encode('utf-8')).hexdigest(), 16))[:10])
-        # df['order_id'] = df.apply(lambda x: hash(tuple(x), axis = 1))
+        # create order id for each transaction
         df['order_id'] =  df.apply(lambda x:md5((str(x[0])+str(x[1])).encode('utf8')).hexdigest(), axis=1)
         column_names = [
             'order_id',
@@ -81,4 +78,4 @@ def transform(filename):
     print(orders_data, order_products_data, products_data)
     return orders_data, order_products_data, products_data
 
-# transform('chesterfield.csv')
+transform('chesterfield.csv')
