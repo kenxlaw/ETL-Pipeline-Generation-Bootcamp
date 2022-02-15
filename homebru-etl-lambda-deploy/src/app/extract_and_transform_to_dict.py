@@ -44,6 +44,7 @@ def transform(filename):
                         'product_id',
                         'quantity']
         order_products_data = order_products.reindex(columns=column_names)
+        order_products_data = order_products_data.to_dict()
 
                 
         # sort the orders table to be converted for the products table
@@ -53,6 +54,7 @@ def transform(filename):
                         'product_name',
                         'product_price']
         products_data = products.reindex(columns=column_names)
+        products_data = products_data.to_dict()
 
         orders = orders.drop(columns=['product','product_id','product_name','product_price'])
         # re-index orders table
@@ -62,6 +64,7 @@ def transform(filename):
                         'payment_type']
         orders = orders.reindex(columns=column_names)
         orders_data = orders.drop_duplicates()
+        orders_data = orders_data.to_dict()
             
     except Exception as error:
         print("An error occurred: " + str(error))

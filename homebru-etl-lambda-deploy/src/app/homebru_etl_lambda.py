@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import app.extract_and_transform as extract_and_transform
 import app.database as database
+from sqlalchemy import create_engine
 
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
@@ -27,14 +28,27 @@ def lambda_handler(event, context):
     print(os.path.isfile('/tmp/chesterfield.csv'))
     
     # This part will be replaced with our ETL code to Transform our cafe data ready for RedShift
-    # orders_data, order_products_data, products_data = extract_and_transform.transform(f"/tmp/{object_name}")
+    products_data, order_products_data, orders_data = extract_and_transform.transform(f"/tmp/{object_name}")
+
+    print(products_data)
+    print(order_products_data)
+    print(orders_data)
+    
+    creds = get_ssm_parameters_under_path("/team1/redshift")
+    # database.create_table(creds)
 
     # This is needed for credentials to the RedShift database
-    creds = get_ssm_parameters_under_path("/team1/redshift")
+    # conn = create_engine('postgresql://team1:nbdgAz4c9VTxrmGb@redshiftcluster-m1neadvazflf.ckpd1phjemrk.eu-west-1.redshift.amazonaws.com:5439/team1_cafe')
+
+    # products_data.to_sql('products', conn, index=False, if_exists='append')
+    # order_products_data.to_sql('basket', conn, index=False, if_exists='append')
+    # orders_data.to_sql('transactions', conn, index=False, if_exists='append')
 
     # Try to get this working first and then try the rest
-    # database.persist_products(creds, products_data)
-    database.create_table(creds)
+    database.persist_products(creds, products_data)
+    # database.persist_order_products(creds, order_products_data)
+    # database.persist_orders(creds, orders_data)
+    
 
     # database.persist_order_products(creds, transformed_data["order_products_data"])
     # database.persist_orders(creds, transformed_data["orders_data"])
