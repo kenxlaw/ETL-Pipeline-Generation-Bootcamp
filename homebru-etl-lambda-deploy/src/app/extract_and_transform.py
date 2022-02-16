@@ -16,6 +16,8 @@ def transform(filename):
         df = df.drop(columns=['branch_name','customer_name','card_number'])
         df = df.dropna()
         # end of previous comment
+        # change timestamp formatting
+        df['order_time'] = pd.to_datetime(df['order_time'])
         # create order id for each transaction
         df['order_id'] =  df.apply(lambda x:md5((str(x[0])+str(x[1])).encode('utf8')).hexdigest(), axis=1)
         column_names = [
