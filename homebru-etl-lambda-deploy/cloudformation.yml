@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >
+  Template to deploy a lambda zip that allows for manipulation to transfer data to RedShift
+Parameters:
+  NamePrefix:
+    Type: String
+    Description: Prefix to be used for creating uniquely named resources
+Resources:
+  ETLLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${NamePrefix}-etl-lambda
+      Runtime: python3.9
+      Timeout: 600
+      Handler: app/homebru_etl_lambda.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code: .deployment/lambda-package.zip
+      Layers:
+        - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_pandas_layer:1
+        - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_psycopg2_layer:1
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue:
+              'network-infra-VPCSGID'
+        SubnetIds:
+          - Fn::ImportValue:
+              !Sub 'network-infra-PrivateSubnet0ID'
+  CafeDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: homebru-cafe-data-bucket
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt ETLLambdaFunction.Arn
+  CafeDataBucketPermission:
+    Type: AWS::Lambda::Permission
+    Properties:                                 
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ETLLambdaFunction
+      Principal: s3.amazonaws.com
+      SourceArn: "arn:aws:s3:::homebru-cafe-data-bucket"
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      Path: "/"
+      PermissionsBoundary: 
+        !Sub arn:aws:iam::${AWS::AccountId}:policy/ScopePermissions
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+      Policies:
+      - PolicyName: LambdaLogsPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: '*'
+      - PolicyName: LambdaS3Policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:PutObject
+            Resource: [
+              'arn:aws:s3:::homebru-cafe-data-bucket',
+              'arn:aws:s3:::homebru-cafe-data-bucket/*'
+            ]
