@@ -12,7 +12,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${NamePrefix}-etl-lambda
       Runtime: python3.9
-      Timeout: 5
+      Timeout: 600
       Handler: app/homebru_etl_lambda.lambda_handler
       Role: !GetAtt LambdaFunctionRole.Arn
       Code: .deployment/lambda-package.zip
