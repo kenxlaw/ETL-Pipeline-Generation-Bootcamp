@@ -1,3 +1,4 @@
+echo "Lambda deploy CICD test"
 set -eu
 
 #### CONFIGURATION SECTION ####
