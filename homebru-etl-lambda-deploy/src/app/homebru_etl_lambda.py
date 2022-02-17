@@ -15,6 +15,8 @@ def lambda_handler(event, context):
     bucket_name = s3_event["bucket"]["name"]
     object_name = s3_event["object"]["key"]
 
+    print("Test for CI CD Pipeline")
+
     LOGGER.info(f"Triggered by file {object_name} in bucket {bucket_name}")
 
     s3 = boto3.client('s3')
