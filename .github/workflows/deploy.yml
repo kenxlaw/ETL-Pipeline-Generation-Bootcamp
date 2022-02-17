@@ -19,4 +19,5 @@ jobs:
         run: | 
           echo "Homebru deploys!"
           ls -R
-          ./homebru-etl-lambda-deploy/deploy.sh
+          chmod +x ./homebru-etl-lambda-deploy/deploy.sh
+          ./homebru-etl-lambda-deploy/deploy.sh -k ${AWS_ACCESS_KEY_ID} -s ${AWS_SECRET_ACCESS_KEY}
