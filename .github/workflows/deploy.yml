@@ -18,6 +18,6 @@ jobs:
       - name: deploy
         run: | 
           echo "Homebru deploys!"
-          chmod +x ./homebru-etl-lambda-deploy/deploy.sh
-          ls -l
-          ./homebru-etl-lambda-deploy/deploy.sh 
+          cd homebru-etl-lambda-deploy
+          chmod +x deploy.sh
+          ./deploy.sh 
