@@ -24,23 +24,18 @@ def lambda_handler(event, context):
 
     response = s3.list_objects(Bucket='homebru-cafe-data-bucket')
     print([x["Key"] for x in response["Contents"]])
-    
-    # This part will be replaced with our ETL code to Transform our cafe data ready for RedShift
         
     creds = get_ssm_parameters_under_path("/team1/redshift")
 
     results = extract_and_transform.transform(f"/tmp/{object_name}")
 
     product_data = results["products_data"]
-    # print(product_data)
     database.insert_products(creds, product_data)
 
     order_products_data = results["order_products_data"]
-    # print(order_products_data)
     database.insert_basket(creds, order_products_data)
 
     orders_data = results["orders_data"]
-    # print(orders_data)
     database.insert_transactions(creds, orders_data) 
 
 def get_ssm_parameters_under_path(path: str) -> dict:
