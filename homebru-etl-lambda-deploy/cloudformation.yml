@@ -10,9 +10,10 @@ Resources:
   ETLLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
+      ReservedConcurrentExecutions: 1 # Makes this run one lambda at a time - temporarily until queuing is done
       FunctionName: !Sub ${NamePrefix}-etl-lambda
       Runtime: python3.9
-      Timeout: 600
+      Timeout: 300
       Handler: app/homebru_etl_lambda.lambda_handler
       Role: !GetAtt LambdaFunctionRole.Arn
       Code: .deployment/lambda-package.zip
