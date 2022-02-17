@@ -13,11 +13,11 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: eu-west-1
     steps:
-      - name: group-1-project-repo
+      - name: checkout-repo
         uses: actions/checkout@v2
       - name: deploy
         run: | 
           echo "Homebru deploys!"
-          ls -R
           chmod +x ./homebru-etl-lambda-deploy/deploy.sh
+          ls -l
           ./homebru-etl-lambda-deploy/deploy.sh 
