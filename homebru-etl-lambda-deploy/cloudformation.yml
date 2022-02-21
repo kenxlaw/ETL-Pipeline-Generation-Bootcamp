@@ -52,7 +52,7 @@ Resources:
     Properties:
       BatchSize: 1
       Enabled: true
-      EventSourceArn: !GetAtt MyQueue.Arn
+      EventSourceArn: !GetAtt LoadQueue.Arn
       FunctionName: !GetAtt LoadLambdaFunction.Arn
   LoadQueue:
     Type: AWS::SQS::Queue
