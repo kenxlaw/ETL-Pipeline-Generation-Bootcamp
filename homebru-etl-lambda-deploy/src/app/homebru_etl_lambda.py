@@ -15,8 +15,6 @@ def lambda_handler(event, context):
     bucket_name = s3_event["bucket"]["name"]
     object_name = s3_event["object"]["key"]
 
-    print("Test for CI CD Pipeline")
-
     LOGGER.info(f"Triggered by file {object_name} in bucket {bucket_name}")
 
     s3 = boto3.client('s3')
@@ -45,7 +43,7 @@ def lambda_handler(event, context):
     order_products_data = results["order_products_data"]
     # print(order_products_data)
     database.insert_basket(creds, order_products_data)
-    print(f"The baskets from {file_name} has successfully been loaded into the RedShift team1_cafe.basket table")
+    print(f"The baskets from {file_name} have successfully been loaded into the RedShift team1_cafe.basket table")
 
     orders_data = results["orders_data"]
     # print(orders_data)
