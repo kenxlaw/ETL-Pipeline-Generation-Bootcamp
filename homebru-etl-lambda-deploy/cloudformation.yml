@@ -33,7 +33,7 @@ Resources:
       ReservedConcurrentExecutions: 1
       FunctionName: !Sub ${NamePrefix}-load-lambda
       Runtime: python3.9
-      Timeout: 300
+      Timeout: 120
       Handler: app/homebru_load_lambda.lambda_handler
       Role: !GetAtt LambdaFunctionRole.Arn
       Code: .deployment/lambda-package.zip
