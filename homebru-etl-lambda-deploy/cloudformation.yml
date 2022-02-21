@@ -30,7 +30,7 @@ Resources:
   LoadLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
-      ReservedConcurrentExecutions: 1 # Makes this run one lambda at a time - temporarily until queuing is done
+      ReservedConcurrentExecutions: 1
       FunctionName: !Sub ${NamePrefix}-load-lambda
       Runtime: python3.9
       Timeout: 300
@@ -47,6 +47,19 @@ Resources:
         SubnetIds:
           - Fn::ImportValue:
               !Sub 'network-infra-PrivateSubnet0ID'
+      LoadLambdaFunctionEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+      Properties:
+      BatchSize: 1
+      Enabled: true
+      EventSourceArn: !GetAtt MyQueue.Arn
+      FunctionName: !GetAtt LoadLambdaFunction.Arn
+    LoadQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: !Sub ${NamePrefix}-load-queue
+        DelaySeconds: 0
+        VisibilityTimeout: 120
   CafeTransformedDataBucket:
     Type: AWS::S3::Bucket
     Properties:
