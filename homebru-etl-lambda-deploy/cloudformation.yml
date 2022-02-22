@@ -121,5 +121,6 @@ Resources:
               - s3:PutObject
             Resource: [
               'arn:aws:s3:::homebru-cafe-data-bucket',
-              'arn:aws:s3:::homebru-cafe-data-bucket/*'
+              'arn:aws:s3:::homebru-cafe-data-bucket/*',
+              'arn:aws:s3:::homebru-cafe-transformed-data-bucket/*',
             ]
