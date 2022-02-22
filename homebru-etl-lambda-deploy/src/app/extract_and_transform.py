@@ -21,8 +21,8 @@ def transform(filename):
         df['order_time'] = pd.to_datetime(df['order_time'])
         column_names = [
             'order_id',
-            'branch_name',
-            'order_time', 
+            'order_time',
+            'branch_name', 
             'order_products',
             'total_price',
             'payment_method']
@@ -58,8 +58,8 @@ def transform(filename):
 
         orders = orders.drop(columns=['product','product_id','product_name','product_price'])
         # re-index orders table
-        column_names = ['order_id',
-                        'branch_name',
+        column_names = ['branch_name',
+                        'order_id',
                         'order_time',
                         'total_price',
                         'payment_method']

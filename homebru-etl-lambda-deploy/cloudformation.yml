@@ -7,14 +7,14 @@ Parameters:
     Type: String
     Description: Prefix to be used for creating uniquely named resources
 Resources:
-  ETLLambdaFunction:
+  ETLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
       ReservedConcurrentExecutions: 1 # Makes this run one lambda at a time - temporarily until queuing is done
-      FunctionName: !Sub ${NamePrefix}-etl-lambda
+      FunctionName: !Sub ${NamePrefix}-extract-transform-lambda
       Runtime: python3.9
       Timeout: 300
-      Handler: app/homebru_etl_lambda.lambda_handler
+      Handler: app/homebru_extract_transform_lambda.lambda_handler
       Role: !GetAtt LambdaFunctionRole.Arn
       Code: .deployment/lambda-package.zip
       Layers:
@@ -71,12 +71,12 @@ Resources:
       NotificationConfiguration:
         LambdaConfigurations:
           - Event: s3:ObjectCreated:*
-            Function: !GetAtt ETLLambdaFunction.Arn
+            Function: !GetAtt ETLambdaFunction.Arn
   CafeDataBucketPermission:
     Type: AWS::Lambda::Permission
     Properties:                                 
       Action: lambda:InvokeFunction
-      FunctionName: !Ref ETLLambdaFunction
+      FunctionName: !Ref ETLambdaFunction
       Principal: s3.amazonaws.com
       SourceArn: "arn:aws:s3:::homebru-cafe-data-bucket"
   LambdaFunctionRole:
