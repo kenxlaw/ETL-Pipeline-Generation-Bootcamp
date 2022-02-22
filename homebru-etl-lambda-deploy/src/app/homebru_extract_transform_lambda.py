@@ -41,6 +41,7 @@ def lambda_handler(event, context):
 
 def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
 
+    LOGGER.info(f"Sending transformed data set of type {data_type} with {len(data_set)} rows")
     write_csv("/tmp/output.csv", data_set)
     LOGGER.info(f"Wrote a local CSV for: {data_set}")
 
@@ -63,8 +64,32 @@ def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
 
 def write_csv(filename: str, data: list[dict[str, str]]):
     with open(filename, 'w', newline='') as csvfile:
+        LOGGER.info(f"Python type: {type(data)}")
+        LOGGER.info(f"File row 0 {data[0]}")
         writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
+        #writer.writeheader()
         writer.writerows(data)
+
+
+        # basket_fieldnames = ['order_id','product_id','quantity']
+        # products_fieldnames = ['product_id','product_name','product_price']
+        # transactions_fieldnames = ['order_id','branch_name','order_time','total_price','payment_method']
+        
+        # # write basket.csv
+        # with open("basket.csv", "w") as order_products_csvfile:
+        #     writer = csv.DictWriter(order_products_csvfile, fieldnames=basket_fieldnames)
+        #     writer.writeheader()
+        #     writer.writerows(order_products_data)
+        # # write products.csv
+        # with open("products.csv", "w") as products_csvfile:
+        #     writer = csv.DictWriter(products_csvfile, fieldnames=products_fieldnames)
+        #     writer.writeheader()
+        #     writer.writerows(products_data)
+        # # write transactions.csv
+        # with open("transactions.csv", "w") as orders_csvfile:
+        #     writer = csv.DictWriter(orders_csvfile, fieldnames=transactions_fieldnames)
+        #     writer.writeheader()
+        #     writer.writerows(orders_data)
 
 
     
