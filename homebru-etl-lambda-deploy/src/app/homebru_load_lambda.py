@@ -33,15 +33,15 @@ def lambda_handler(event, context):
 
     creds = get_ssm_parameters_under_path("/team1/redshift")
 
-    if os.path.is_file(stripped_file + "_products"):
-        products_transformed_data = read_products(file_path)        
-        database.insert_products(creds, products_transformed_data)
-        print(f"The products from {file_name} have successfully been loaded into the RedShift team1_cafe.products table")
-    elif os.path.is_file(stripped_file + "_basket"):
+    # if os.path.is_file(stripped_file + "_products") is True:
+    #     products_transformed_data = read_products(file_path)        
+    #     database.insert_products(creds, products_transformed_data)
+    #     print(f"The products from {file_name} have successfully been loaded into the RedShift team1_cafe.products table")
+    if os.path.is_file(stripped_file + "_basket") is True:
         basket_transformed_data = read_basket(file_path)
         database.insert_basket(creds, basket_transformed_data)
         print(f"The baskets from {file_name} have successfully been loaded into the RedShift team1_cafe.basket table")
-    elif os.path.is_file(stripped_file + "_transactions"):
+    elif os.path.is_file(stripped_file + "_transactions") is True:
         transactions_transformed_data = read_transactions(file_path)
         database.insert_transactions(creds, transactions_transformed_data) 
         print(f"The orders from {file_name} have successfully been loaded into the RedShift team1_cafe.transactions table")

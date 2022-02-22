@@ -23,16 +23,16 @@ def insert_products(creds, products_list):
     statements = []
     
     statements.append('''CREATE TABLE products_temp(product_id CHARACTER VARYING(50) NOT NULL encode lzo,
-                        product_name CHARACTER VARYING(50) encode lzo,
-                        product_price DOUBLE PRECISION);
-                        ''')
+                         product_name CHARACTER VARYING(50) encode lzo,
+                         product_price DOUBLE PRECISION);
+                         ''')
     
     for prod in products_list:
-        sql = f"INSERT INTO products_temp (product_id, product_name, product_price) VALUES ('{prod['product_id']}','{prod['product_name']}','{prod['product_price']}');"
+        sql = f"INSERT INTO products_temp (product_id, product_name, product_price) VALUES ('{prod[0]}','{prod[1]}','{prod[2]}');"
         statements.append(sql)
     
-    # for statement in statements:
-    #     print(statement)
+    for statement in statements:
+        print(statement)
         
     delete_statement = '''
         DELETE FROM products_temp
@@ -56,17 +56,17 @@ def insert_basket(creds, order_products_list):
     print(f"There are {len(order_products_list)} items in basket")
     statements = []
     
-    statements.append('''CREATE TABLE basket_temp(order_id character varying(50) NOT NULL encode lzo,
-                               product_id character varying(50) NOT NULL encode lzo,
-                               quantity integer encode az64);
-                               ''')
+    statements.append('''CREATE TABLE basket_temp(order_id CHARACTER VARYING(50) NOT NULL encode lzo,
+                         product_id CHARACTER VARYING(50) NOT NULL encode lzo,
+                         quantity INTEGER encode az64);
+                         ''')
     
-    for prod in order_products_list:
-        sql = f"INSERT INTO basket_temp (order_id, product_id, quantity) VALUES ('{prod['order_id']}','{prod['product_id']}','{prod['quantity']}');"
+    for basket in order_products_list:
+        sql = f"INSERT INTO basket_temp (order_id, product_id, quantity) VALUES ('{basket[0]}','{basket[1]}','{basket[2]}');"
         statements.append(sql)
     
-    # for statement in statements:
-    #     print(statement)
+    for statement in statements:
+        print(statement)
         
     delete_statement = '''
         DELETE FROM basket_temp
@@ -91,18 +91,19 @@ def insert_transactions(creds, orders_list):
     print(f"There are {len(orders_list)} transactions")
     statements = []
     
-    statements.append('''CREATE TABLE transactions_temp(order_id CHARACTER VARYING(50) NOT NULL encode lzo,
-                        order_time TIMESTAMP without time zone encode az64,
-                        total_price DOUBLE PRECISION,
-                        payment_method CHARACTER VARYING(50) encode lzo);
-                        ''')
+    statements.append('''CREATE TABLE transactions_temp(branch_name CHARACTER VARYING(50) NOT NULL encode lzo,
+                         order_id CHARACTER VARYING(50) NOT NULL encode lzo,
+                         order_time TIMESTAMP without time zone encode az64,
+                         total_price DOUBLE PRECISION,
+                         payment_method CHARACTER VARYING(50) encode lzo);
+                         ''')
     
     for order in orders_list:
-        sql = f"INSERT INTO transactions_temp (order_id, order_time, total_price, payment_method) VALUES ('{order['order_id']}','{order['order_time']}','{order['total_price']}','{order['payment_method']}');"
+        sql = f"INSERT INTO transactions_temp (branch_name, order_id, order_time, total_price, payment_method) VALUES ('{order[0]}','{order[1]}','{order[2]}','{order[3]}','{order[4]}');"
         statements.append(sql)
     
-    # for statement in statements:
-    #     print(statement)
+    for statement in statements:
+        print(statement)
         
     delete_statement = '''
         DELETE FROM transactions_temp
