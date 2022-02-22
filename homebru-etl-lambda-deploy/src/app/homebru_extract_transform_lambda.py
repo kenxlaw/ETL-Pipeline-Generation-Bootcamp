@@ -24,13 +24,13 @@ def lambda_handler(event, context):
     # os.path.basename might be causing error with HeadObject in cloud logs, otherwise looks like it works fine, idk
 
     file_name = os.path.basename(object_name)
-    file_path = (f"/tmp/{file_name}")
+    file_path = f"/tmp/{file_name}"
 
     s3.download_file(bucket_name, object_name, file_path)
 
     print(f"{file_name} has successfully been temporarily moved to the /tmp/ for Extract & Transform Lambda")
 
-    results = extract_and_transform.transform(f"{file_path}")
+    results = extract_and_transform.transform(file_path)
 
     sqs = boto3.client('sqs')
 
@@ -42,7 +42,7 @@ def lambda_handler(event, context):
 def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
 
     write_csv("/tmp/output.csv", data_set)
-    LOGGER.info(f"Wrote a local CSV for: {data_type}")
+    LOGGER.info(f"Wrote a local CSV for: {data_set}")
 
     bucket_name = "homebru-cafe-transformed-data-bucket"
     s3.upload_file("/tmp/output.csv", bucket_name, bucket_key)
@@ -61,10 +61,10 @@ def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
         QueueUrl=queue_url,
         MessageBody=json_message)
 
-def write_csv(filename: str, data_set):
+def write_csv(filename: str, data: list[dict[str, str]]):
     with open(filename, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, data_set)
-        writer.writerows(data_set)
+        writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
+        writer.writerows(data)
 
 
     
