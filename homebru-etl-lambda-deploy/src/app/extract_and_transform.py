@@ -67,9 +67,9 @@ def transform(filename):
         orders_data = orders.drop_duplicates()
         
         results = {
-            "products_data" : products_data.T.to_dict().values(),
-            "order_products_data" : order_products_data.T.to_dict().values(),
-            "orders_data" : orders_data.T.to_dict().values()
+            "products_data" : list(products_data.T.to_dict().values()),
+            "order_products_data" : list(order_products_data.T.to_dict().values()),
+            "orders_data" : list(orders_data.T.to_dict().values())
         }
         
         return results
