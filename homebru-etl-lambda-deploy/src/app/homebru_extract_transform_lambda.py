@@ -42,7 +42,7 @@ def lambda_handler(event, context):
 def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
 
     write_csv("/tmp/output.csv", data_set)
-    LOGGER.info(f"Wrote a local CSV for: {data_set}")
+    LOGGER.info(f"Wrote a local CSV for: {data_type}")
 
     bucket_name = "homebru-cafe-transformed-data-bucket"
     s3.upload_file("/tmp/output.csv", bucket_name, bucket_key)
@@ -61,10 +61,10 @@ def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
         QueueUrl=queue_url,
         MessageBody=json_message)
 
-def write_csv(filename: str, data: list[dict[str, str]]):
+def write_csv(filename: str, data_set):
     with open(filename, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
-        writer.writerows(data)
+        writer = csv.DictWriter(csvfile, data_set)
+        writer.writerows(data_set)
 
 
     
