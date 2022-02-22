@@ -1,6 +1,6 @@
-import uuid
 import pandas as pd
 from hashlib import sha256, md5
+import csv
 
 def transform(filename):
     try:
@@ -13,7 +13,7 @@ def transform(filename):
             'total_price',
             'payment_method',
             'card_number'])
-        df = df.drop(columns=['branch_name','customer_name','card_number'])
+        df = df.drop(columns=['customer_name','card_number'])
         df = df.dropna()
         # end of previous comment
         # create order id for each transaction
@@ -21,6 +21,7 @@ def transform(filename):
         df['order_time'] = pd.to_datetime(df['order_time'])
         column_names = [
             'order_id',
+            'branch_name',
             'order_time', 
             'order_products',
             'total_price',
@@ -30,7 +31,7 @@ def transform(filename):
         orders = pd.DataFrame(df.order_products.str.split(", ").tolist(), index = df.order_id).stack()
         orders = orders.reset_index([0,'order_id'])
         orders.columns = ['order_id','product']
-        orders = pd.merge(orders, df[['order_time','total_price','payment_method','order_id']], on='order_id', how='left')
+        orders = pd.merge(orders, df[['branch_name','order_time','total_price','payment_method','order_id']], on='order_id', how='left')
         # add product_id
         orders['product_id'] = orders['product'].apply(lambda x: str(int(sha256(x.encode('utf-8')).hexdigest(), 16))[:10])
         # add product_name and product_price
@@ -58,6 +59,7 @@ def transform(filename):
         orders = orders.drop(columns=['product','product_id','product_name','product_price'])
         # re-index orders table
         column_names = ['order_id',
+                        'branch_name',
                         'order_time',
                         'total_price',
                         'payment_method']
@@ -69,8 +71,31 @@ def transform(filename):
             "order_products_data" : order_products_data.T.to_dict().values(),
             "orders_data" : orders_data.T.to_dict().values()
         }
+        products_data = results["products_data"]
+        order_products_data = results["order_products_data"]
+        orders_data = results["orders_data"]
+        
+        basket_fieldnames = ['order_id','product_id','quantity']
+        products_fieldnames = ['product_id','product_name','product_price']
+        transactions_fieldnames = ['order_id','branch_name','order_time','total_price','payment_method']
+        
+        # write basket.csv
+        with open("basket.csv", "w") as order_products_csvfile:
+            writer = csv.DictWriter(order_products_csvfile, fieldnames=basket_fieldnames)
+            writer.writeheader()
+            writer.writerows(order_products_data)
+        # write products.csv
+        with open("products.csv", "w") as products_csvfile:
+            writer = csv.DictWriter(products_csvfile, fieldnames=products_fieldnames)
+            writer.writeheader()
+            writer.writerows(products_data)
+        # write transactions.csv
+        with open("transactions.csv", "w") as orders_csvfile:
+            writer = csv.DictWriter(orders_csvfile, fieldnames=transactions_fieldnames)
+            writer.writeheader()
+            writer.writerows(orders_data)
         
         return results
-            
+    
     except Exception as error:
         print("An error occurred: " + str(error))
