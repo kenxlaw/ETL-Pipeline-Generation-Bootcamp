@@ -1,6 +1,6 @@
-import uuid
 import pandas as pd
 from hashlib import sha256, md5
+import csv
 
 def transform(filename):
     try:
@@ -13,7 +13,7 @@ def transform(filename):
             'total_price',
             'payment_method',
             'card_number'])
-        df = df.drop(columns=['branch_name','customer_name','card_number'])
+        df = df.drop(columns=['customer_name','card_number'])
         df = df.dropna()
         # end of previous comment
         # create order id for each transaction
@@ -21,7 +21,8 @@ def transform(filename):
         df['order_time'] = pd.to_datetime(df['order_time'])
         column_names = [
             'order_id',
-            'order_time', 
+            'order_time',
+            'branch_name', 
             'order_products',
             'total_price',
             'payment_method']
@@ -30,7 +31,7 @@ def transform(filename):
         orders = pd.DataFrame(df.order_products.str.split(", ").tolist(), index = df.order_id).stack()
         orders = orders.reset_index([0,'order_id'])
         orders.columns = ['order_id','product']
-        orders = pd.merge(orders, df[['order_time','total_price','payment_method','order_id']], on='order_id', how='left')
+        orders = pd.merge(orders, df[['branch_name','order_time','total_price','payment_method','order_id']], on='order_id', how='left')
         # add product_id
         orders['product_id'] = orders['product'].apply(lambda x: str(int(sha256(x.encode('utf-8')).hexdigest(), 16))[:10])
         # add product_name and product_price
@@ -57,7 +58,8 @@ def transform(filename):
 
         orders = orders.drop(columns=['product','product_id','product_name','product_price'])
         # re-index orders table
-        column_names = ['order_id',
+        column_names = ['branch_name',
+                        'order_id',
                         'order_time',
                         'total_price',
                         'payment_method']
@@ -71,6 +73,6 @@ def transform(filename):
         }
         
         return results
-            
+    
     except Exception as error:
         print("An error occurred: " + str(error))
