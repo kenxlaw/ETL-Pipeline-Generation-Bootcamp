@@ -71,6 +71,29 @@ def transform(filename):
             "order_products_data" : order_products_data.T.to_dict().values(),
             "orders_data" : orders_data.T.to_dict().values()
         }
+        products_data = results["products_data"]
+        order_products_data = results["order_products_data"]
+        orders_data = results["orders_data"]
+        
+        basket_fieldnames = ['order_id','product_id','quantity']
+        products_fieldnames = ['product_id','product_name','product_price']
+        transactions_fieldnames = ['order_id','branch_name','order_time','total_price','payment_method']
+        
+        # write basket.csv
+        with open("basket.csv", "w") as order_products_csvfile:
+            writer = csv.DictWriter(order_products_csvfile, fieldnames=basket_fieldnames)
+            writer.writeheader()
+            writer.writerows(order_products_data)
+        # write products.csv
+        with open("products.csv", "w") as products_csvfile:
+            writer = csv.DictWriter(products_csvfile, fieldnames=products_fieldnames)
+            writer.writeheader()
+            writer.writerows(products_data)
+        # write transactions.csv
+        with open("transactions.csv", "w") as orders_csvfile:
+            writer = csv.DictWriter(orders_csvfile, fieldnames=transactions_fieldnames)
+            writer.writeheader()
+            writer.writerows(orders_data)
         
         return results
     

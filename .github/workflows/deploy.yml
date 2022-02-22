@@ -1,0 +1,23 @@
+name: deploy-script
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  list-and-deploy:
+    name: deploy script
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: eu-west-1
+    steps:
+      - name: checkout-repo
+        uses: actions/checkout@v2
+      - name: deploy
+        run: | 
+          echo "Homebru deploys!"
+          cd homebru-etl-lambda-deploy
+          chmod +x deploy.sh
+          ./deploy.sh 
