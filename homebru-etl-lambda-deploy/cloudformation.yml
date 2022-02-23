@@ -20,13 +20,6 @@ Resources:
       Layers:
         - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_pandas_layer:1
         - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_psycopg2_layer:1
-      VpcConfig:
-        SecurityGroupIds:
-          - Fn::ImportValue:
-              'network-infra-VPCSGID'
-        SubnetIds:
-          - Fn::ImportValue:
-              !Sub 'network-infra-PrivateSubnet0ID'
   LoadLambdaFunction:
     Type: AWS::Lambda::Function
     Properties:
