@@ -32,9 +32,11 @@ def lambda_handler(event, context):
     sqs = boto3.client('sqs')
 
     send_file(s3, sqs, results["products_data"], "products", file_name.rsplit('.', 1)[0] + "_products.csv")
+    LOGGER.info(event)
     send_file(s3, sqs, results["order_products_data"], "order_products", file_name.rsplit('.', 1)[0] + "_baskets.csv")
+    LOGGER.info(event)
     send_file(s3, sqs, results["orders_data"], "orders", file_name.rsplit('.', 1)[0] + "_transactions.csv")
-
+    LOGGER.info(event)
 
 def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
 
