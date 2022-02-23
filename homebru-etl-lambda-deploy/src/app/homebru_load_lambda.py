@@ -33,20 +33,30 @@ def lambda_handler(event, context):
 
     creds = get_ssm_parameters_under_path("/team1/redshift")
 
-    if "_products.csv" in object_name:
+    if get_data_type(object_name) == "products":
         products_transformed_data = read_products(file_path)        
         database.insert_products(creds, products_transformed_data)
         print(f"The products from {file_name} have successfully been loaded into the RedShift team1_cafe.products table")
-    elif "_baskets.csv" in object_name:
+    elif get_data_type(object_name) == "baskets":
         basket_transformed_data = read_basket(file_path)
         database.insert_basket(creds, basket_transformed_data)
         print(f"The baskets from {file_name} have successfully been loaded into the RedShift team1_cafe.basket table")
-    elif "_transactions.csv" in object_name:
+    elif get_data_type(object_name) == "transactions":
         transactions_transformed_data = read_transactions(file_path)
         database.insert_transactions(creds, transactions_transformed_data) 
         print(f"The orders from {file_name} have successfully been loaded into the RedShift team1_cafe.transactions table")
     else:
         print(f"Invalid file type for file {file_path}")
+
+def get_data_type(object_name):
+    if "_products.csv" in object_name:
+        return "products"
+    elif "_baskets.csv" in object_name:
+        return "baskets"
+    elif "_transactions.csv" in object_name:
+        return "transactions"
+    else:
+        raise Exception("Unexpected data type")
 
 def get_ssm_parameters_under_path(path: str) -> dict:
 

@@ -28,7 +28,7 @@ def insert_products(creds, products_list):
                          ''')
     
     for prod in products_list:
-        sql = f"INSERT INTO products_temp (product_id, product_name, product_price) VALUES ('{prod[0]}','{prod[1]}','{prod[2]}');"
+        sql = f"INSERT INTO products_temp (product_id, product_name, product_price) VALUES ('{prod['product_id']}','{prod['product_name']}','{prod['produce_price']}');"
         statements.append(sql)
     
     for statement in statements:
@@ -62,7 +62,7 @@ def insert_basket(creds, order_products_list):
                          ''')
     
     for basket in order_products_list:
-        sql = f"INSERT INTO basket_temp (order_id, product_id, quantity) VALUES ('{basket[0]}','{basket[1]}','{basket[2]}');"
+        sql = f"INSERT INTO basket_temp (order_id, product_id, quantity) VALUES ('{basket['order_id']}','{basket['product_id']}','{basket['quantity']}');"
         statements.append(sql)
     
     for statement in statements:
@@ -99,7 +99,7 @@ def insert_transactions(creds, orders_list):
                          ''')
     
     for order in orders_list:
-        sql = f"INSERT INTO transactions_temp (branch_name, order_id, order_time, total_price, payment_method) VALUES ('{order[0]}','{order[1]}','{order[2]}','{order[3]}','{order[4]}');"
+        sql = f"INSERT INTO transactions_temp (branch_name, order_id, order_time, total_price, payment_method) VALUES ('{order['branch_name']}','{order['order_id']}','{order['order_time']}','{order['total_price']}','{order['payment_method']}');"
         statements.append(sql)
     
     for statement in statements:

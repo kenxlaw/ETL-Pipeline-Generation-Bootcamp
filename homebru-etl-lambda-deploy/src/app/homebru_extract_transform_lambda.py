@@ -65,7 +65,7 @@ def write_csv(filename: str, data: list[dict[str, str]]):
         LOGGER.info(f"Python type: {type(data)}")
         LOGGER.info(f"File row 0 {data[0]}")
         writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
-        #writer.writeheader()
+        writer.writeheader()
         writer.writerows(data)
 
 
