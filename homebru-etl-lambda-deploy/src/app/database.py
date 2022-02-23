@@ -28,7 +28,7 @@ def insert_products(creds, products_list):
                          ''')
     
     for prod in products_list:
-        sql = f"INSERT INTO products_temp (product_id, product_name, product_price) VALUES ('{prod['product_id']}','{prod['product_name']}','{prod['produce_price']}');"
+        sql = f"INSERT INTO products_temp (product_id, product_name, product_price) VALUES ('{prod['product_id']}','{prod['product_name']}','{prod['product_price']}');"
         statements.append(sql)
     
     for statement in statements:
