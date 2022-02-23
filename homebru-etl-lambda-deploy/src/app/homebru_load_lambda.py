@@ -1,5 +1,4 @@
 import logging
-from operator import contains
 import boto3
 import csv
 import os
@@ -14,9 +13,9 @@ LOGGER.setLevel(logging.INFO)
 def lambda_handler(event, context):
     LOGGER.info(event)
 
-    s3_event = event["Records"][0]["s3"]
-    bucket_name = s3_event["bucket"]["name"]
-    object_name = s3_event["object"]["key"]
+    s3_event = event["Records"][0]["body"]
+    bucket_name = s3_event["bucket_name"]
+    object_name = s3_event["bucket_key"]
 
     LOGGER.info(f"Triggered by file {object_name} in bucket {bucket_name}")
 
@@ -33,10 +32,10 @@ def lambda_handler(event, context):
 
     creds = get_ssm_parameters_under_path("/team1/redshift")
 
-    # if os.path.is_file(stripped_file + "_products") is True:
-    #     products_transformed_data = read_products(file_path)        
-    #     database.insert_products(creds, products_transformed_data)
-    #     print(f"The products from {file_name} have successfully been loaded into the RedShift team1_cafe.products table")
+    if os.path.is_file(stripped_file + "_products") is True:
+        products_transformed_data = read_products(file_path)        
+        database.insert_products(creds, products_transformed_data)
+        print(f"The products from {file_name} have successfully been loaded into the RedShift team1_cafe.products table")
     if os.path.is_file(stripped_file + "_baskets.csv") is True:
         basket_transformed_data = read_basket(file_path)
         database.insert_basket(creds, basket_transformed_data)
