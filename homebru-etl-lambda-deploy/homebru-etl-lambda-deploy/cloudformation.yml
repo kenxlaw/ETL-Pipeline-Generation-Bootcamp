@@ -1,0 +1,123 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: >
+  Template to deploy a lambda zip that allows for manipulation to transfer data to RedShift
+Parameters:
+  NamePrefix:
+    Type: String
+    Description: Prefix to be used for creating uniquely named resources
+Resources:
+  ETLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      ReservedConcurrentExecutions: 1 # Makes this run one lambda at a time - temporarily until queuing is done
+      FunctionName: !Sub ${NamePrefix}-extract-transform-lambda
+      Runtime: python3.9
+      Timeout: 300
+      Handler: app/homebru_extract_transform_lambda.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code: .deployment/lambda-package.zip
+      Layers:
+        - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_pandas_layer:1
+        - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_psycopg2_layer:1
+  LoadLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      ReservedConcurrentExecutions: 1
+      FunctionName: !Sub ${NamePrefix}-load-lambda
+      Runtime: python3.9
+      Timeout: 120
+      Handler: app/homebru_load_lambda.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code: .deployment/lambda-package.zip
+      Layers:
+        - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_pandas_layer:1
+        - arn:aws:lambda:eu-west-1:123980920791:layer:python_39_psycopg2_layer:1
+      VpcConfig:
+        SecurityGroupIds:
+          - Fn::ImportValue:
+              'network-infra-VPCSGID'
+        SubnetIds:
+          - Fn::ImportValue:
+              !Sub 'network-infra-PrivateSubnet0ID'
+  LoadLambdaFunctionEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 1
+      Enabled: true
+      EventSourceArn: !GetAtt LoadQueue.Arn
+      FunctionName: !GetAtt LoadLambdaFunction.Arn
+  LoadQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${NamePrefix}-load-queue
+      DelaySeconds: 0
+      VisibilityTimeout: 120
+  CafeTransformedDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: homebru-cafe-transformed-data-bucket
+      # NotificationConfiguration: # Not sure if we need this entire part or not, idk
+      #   LambdaConfigurations:
+      #     - Event: s3:ObjectCreated:*
+      #       Function: !GetAtt LoadLambdaFunction.Arn
+  CafeDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: homebru-cafe-data-bucket
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt ETLambdaFunction.Arn
+  CafeDataBucketPermission:
+    Type: AWS::Lambda::Permission
+    Properties:                                 
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ETLambdaFunction
+      Principal: s3.amazonaws.com
+      SourceArn: "arn:aws:s3:::homebru-cafe-data-bucket"
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action:
+            - sts:AssumeRole
+      Path: "/"
+      PermissionsBoundary: 
+        !Sub arn:aws:iam::${AWS::AccountId}:policy/ScopePermissions
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonSQSFullAccess
+      Policies:
+      - PolicyName: LambdaLogsPolicy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: '*'
+      - PolicyName: LambdaS3Policy
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:PutObject
+            Resource: [
+              'arn:aws:s3:::homebru-cafe-data-bucket',
+              'arn:aws:s3:::homebru-cafe-data-bucket/*',
+              'arn:aws:s3:::homebru-cafe-transformed-data-bucket/*',
+            ]
