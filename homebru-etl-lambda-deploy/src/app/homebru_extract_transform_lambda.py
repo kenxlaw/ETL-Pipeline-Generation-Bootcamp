@@ -20,8 +20,6 @@ def lambda_handler(event, context):
 
     s3 = boto3.client('s3')
 
-    # os.path.basename might be causing error with HeadObject in cloud logs, otherwise looks like it works fine, idk
-
     file_name = os.path.basename(object_name)
     file_path = f"/tmp/{file_name}"
 
@@ -33,9 +31,9 @@ def lambda_handler(event, context):
 
     sqs = boto3.client('sqs')
 
-    # send_file(s3, sqs, results["products_data"], "products", file_name.rsplit('.', 1)[0] + "_products.csv")
+    send_file(s3, sqs, results["products_data"], "products", file_name.rsplit('.', 1)[0] + "_products.csv")
     send_file(s3, sqs, results["order_products_data"], "order_products", file_name.rsplit('.', 1)[0] + "_baskets.csv")
-    # send_file(s3, sqs, results["orders_data"], "orders", file_name.rsplit('.', 1)[0] + "_transactions.csv")
+    send_file(s3, sqs, results["orders_data"], "orders", file_name.rsplit('.', 1)[0] + "_transactions.csv")
 
 
 def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
@@ -56,17 +54,18 @@ def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
     
     json_message = json.dumps(message)
     queue_url = "https://sqs.eu-west-1.amazonaws.com/123980920791/homebru-cf-load-queue"
-    LOGGER.info(f"Sending SQS message {json_message} to queue {queue_url}")
     sqs.send_message(
         QueueUrl=queue_url,
         MessageBody=json_message)
+    LOGGER.info(f"Sending SQS message {json_message} to queue {queue_url}")
+    
 
 def write_csv(filename: str, data: list[dict[str, str]]):
     with open(filename, 'w', newline='') as csvfile:
         LOGGER.info(f"Python type: {type(data)}")
         LOGGER.info(f"File row 0 {data[0]}")
         writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
-        writer.writeheader()
+        #writer.writeheader()
         writer.writerows(data)
 
 
