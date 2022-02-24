@@ -31,9 +31,9 @@ def lambda_handler(event, context):
 
     sqs = boto3.resource('sqs')
 
-    send_file(s3, sqs, results["products_data"], "products", object_name.rsplit('.', 1)[0] + "_products.csv")
-    send_file(s3, sqs, results["order_products_data"], "order_products", object_name.rsplit('.', 1)[0] + "_baskets.csv")
-    send_file(s3, sqs, results["orders_data"], "orders", object_name.rsplit('.', 1)[0] + "_transactions.csv")
+    send_file(s3, sqs, results["products_data"], "products", file_name.rsplit('.', 1)[0] + "_products.csv")
+    send_file(s3, sqs, results["order_products_data"], "order_products", file_name.rsplit('.', 1)[0] + "_baskets.csv")
+    send_file(s3, sqs, results["orders_data"], "orders", file_name.rsplit('.', 1)[0] + "_transactions.csv")
     
     
 def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
@@ -56,7 +56,8 @@ def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
     queue_url = "https://sqs.eu-west-1.amazonaws.com/123980920791/homebru-cf-load-queue"
     sqs.send_message(
         QueueUrl=queue_url,
-        MessageBody=json_message)
+        MessageBody=json_message,
+        MessageGroupId='1')
     LOGGER.info(f"Sending SQS message {json_message} to queue {queue_url}")
 
 
@@ -65,7 +66,7 @@ def write_csv(filename: str, data: list[dict[str, str]]):
         LOGGER.info(f"Python type: {type(data)}")
         LOGGER.info(f"File row 0 {data[0]}")
         writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
-        writer.writeheader()
+        #writer.writeheader()
         writer.writerows(data)
 
 
