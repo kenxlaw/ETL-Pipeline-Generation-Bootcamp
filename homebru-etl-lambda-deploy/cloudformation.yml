@@ -50,16 +50,19 @@ Resources:
   LoadQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub ${NamePrefix}-load-queue
+      QueueName: !Sub ${NamePrefix}-load-queue.fifo
+      FifoQueue: True
+      ContentBasedDeduplication: True
       DelaySeconds: 0
       VisibilityTimeout: 120
       RedrivePolicy: 
         deadLetterTargetArn: !GetAtt LoadDeadLetterQueue.Arn
-        maxReceiveCount: 1
-  LoadDeadLetterQueue:
+        maxReceiveCount: 5
+  LoadDeadLetterQueue: 
     Type: AWS::SQS::Queue
-    Properties:
-      QueueName: !Sub ${NamePrefix}-load-queue-dlq
+    Properties: 
+      FifoQueue: True
+      QueueName: !Sub ${NamePrefix}-load-queue-dlq.fifo
   CafeTransformedDataBucket:
     Type: AWS::S3::Bucket
     Properties:
