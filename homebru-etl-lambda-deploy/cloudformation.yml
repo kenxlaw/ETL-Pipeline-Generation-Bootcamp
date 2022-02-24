@@ -53,6 +53,13 @@ Resources:
       QueueName: !Sub ${NamePrefix}-load-queue
       DelaySeconds: 0
       VisibilityTimeout: 120
+      RedrivePolicy:
+        deadletterTargetArn: !GetAtt LoadDeadLetterQueue.Arn
+        maxReceiveCount: 1
+  LoadDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${NamePrefix}-load-queue-dlq
   CafeTransformedDataBucket:
     Type: AWS::S3::Bucket
     Properties:
