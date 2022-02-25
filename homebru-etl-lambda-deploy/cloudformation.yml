@@ -147,5 +147,5 @@ Resources:
               'arn:aws:s3:::homebru-cafe-data-bucket',
               'arn:aws:s3:::homebru-cafe-data-bucket/*',
               'arn:aws:s3:::homebru-cafe-transformed-data-bucket/*',
-              'arn.aws:s3:::homebru-cafe-data-backup-bucket/*',
+              'arn:aws:s3:::homebru-cafe-data-backup-bucket/*',
             ]
