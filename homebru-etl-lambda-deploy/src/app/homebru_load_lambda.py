@@ -27,10 +27,6 @@ def lambda_handler(event, context):
 
     s3.download_file(bucket_name, object_name, file_path)
 
-    # stripped_file = file_path.rsplit('_products.csv', 1)[0]
-    # stripped_file = file_path.rsplit('_baskets.csv', 1)[0]
-    # stripped_file = file_path.rsplit('_transactions.csv', 1)[0]
-
     creds = get_ssm_parameters_under_path("/team1/redshift")
 
     if get_data_type(object_name) == "products":
