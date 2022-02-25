@@ -78,9 +78,4 @@ def create_backup(s3, bucket_name, object_name):
     LOGGER.info(copy_object)
     #write copy statement 
     s3.copy_object(CopySource=copy_object,Bucket=destination_bucket_name,Key=object_name)
-    LOGGER.info(s3.copy_object(CopySource=copy_object,Bucket=destination_bucket_name,Key=object_name))
-
-    return {
-        'statusCode': 3000,
-        'body': json.dumps(f'A cafe data backup has been created.\n{object_name} has been been copied from {bucket_name} to {destination_bucket_name}')
-    }
+    LOGGER.info(f'A cafe data backup has been created.\n{object_name} has been been copied from {bucket_name} to {destination_bucket_name}')
