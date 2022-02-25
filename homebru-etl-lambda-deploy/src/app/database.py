@@ -4,12 +4,9 @@ def query_multiple(creds, statements: list[str]):
     try:
         conn = psycopg2.connect(f"dbname={creds['db']} user={creds['user']} password={creds['password']} host={creds['host']} port={creds['port']}")
         cur = conn.cursor()
-        # Execute statements
         for statement in statements:
             cur.execute(statement)
-        # commit the transaction
         conn.commit()
-        # close the database communication
         cur.close()
     except Exception as e:
         raise e
@@ -18,7 +15,6 @@ def query_multiple(creds, statements: list[str]):
             conn.close()
 
 def insert_products(creds, products_list):
-    # Generate some SQL statements
     print(f"There are {len(products_list)} products")
     statements = []
     
@@ -52,7 +48,6 @@ def insert_products(creds, products_list):
 
 
 def insert_basket(creds, order_products_list):
-    # Generate some SQL statements
     print(f"There are {len(order_products_list)} items in basket")
     statements = []
     
@@ -87,7 +82,6 @@ def insert_basket(creds, order_products_list):
     query_multiple(creds, statements)
 
 def insert_transactions(creds, orders_list):
-    # Generate some SQL statements
     print(f"There are {len(orders_list)} transactions")
     statements = []
     
@@ -120,9 +114,3 @@ def insert_transactions(creds, orders_list):
     statements.append(merge_statement)
     
     query_multiple(creds, statements)
-
-# results = extract_and_transform.transform("chesterfield.csv")
-# product_data = results["products_data"]
-
-# print(product_data)
-# insert_products("test", product_data)

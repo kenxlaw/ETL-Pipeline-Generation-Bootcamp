@@ -71,11 +71,7 @@ def write_csv(filename: str, data: list[dict[str, str]]):
         writer.writerows(data)
 
 def create_backup(s3, bucket_name, object_name):
-    destination_bucket_name='homebru-cafe-data-backup-bucket'
-    LOGGER.info(destination_bucket_name)
-    #specify from where file needs to be copied
-    copy_object={'Bucket':bucket_name,'Key':object_name}
-    LOGGER.info(copy_object)
-    #write copy statement 
-    s3.copy_object(CopySource=copy_object,Bucket=destination_bucket_name,Key=object_name)
+    destination_bucket_name = 'homebru-cafe-data-backup-bucket'
+    copy_object = {'Bucket' : bucket_name, 'Key' : object_name}
+    s3.copy_object(CopySource = copy_object, Bucket = destination_bucket_name, Key = object_name)
     LOGGER.info(f'A cafe data backup has been created.\n{object_name} has been been copied from {bucket_name} to {destination_bucket_name}')

@@ -1,1 +1,4 @@
 requests==2.27.1
+
+# No other requirements are needed because the two layers we use (psycopg2 & pandas) provide all of the additional plugins and imports
+# required. AWS also supports multiple other plugins which are used throughout most of the services (such as boto3)
