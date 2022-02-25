@@ -32,8 +32,8 @@ def lambda_handler(event, context):
     sqs = boto3.client('sqs')
 
     send_file(s3, sqs, results["products_data"], "products", object_name.rsplit('.', 1)[0] + "_products.csv")
-    send_file(s3, sqs, results["order_products_data"], "order_products", object_name.rsplit('.', 1)[0] + "_baskets.csv")
-    send_file(s3, sqs, results["orders_data"], "orders", object_name.rsplit('.', 1)[0] + "_transactions.csv")
+    send_file(s3, sqs, results["order_products_data"], "baskets", object_name.rsplit('.', 1)[0] + "_baskets.csv")
+    send_file(s3, sqs, results["orders_data"], "transactions", object_name.rsplit('.', 1)[0] + "_transactions.csv")
     
     
 def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
@@ -66,7 +66,7 @@ def write_csv(filename: str, data: list[dict[str, str]]):
         LOGGER.info(f"Python type: {type(data)}")
         LOGGER.info(f"File row 0 {data[0]}")
         writer = csv.DictWriter(csvfile, fieldnames=data[0].keys())
-        #writer.writeheader()
+        writer.writeheader()
         writer.writerows(data)
 
 # def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
