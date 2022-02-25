@@ -23,6 +23,7 @@ def lambda_handler(event, context):
     file_name = os.path.basename(object_name)
     file_path = f"/tmp/{file_name}"
 
+    # The create_backup function will automatically upload all files from the cafe-data bucket to the cafe-data-backup bucket
     create_backup(s3, bucket_name, object_name)
 
     s3.download_file(bucket_name, object_name, file_path)
@@ -60,7 +61,6 @@ def send_file(s3, sqs, data_set, data_type: str, bucket_key: str):
         MessageBody=json_message,
         MessageGroupId='1')
     LOGGER.info(f"Sending SQS message {json_message} to queue {queue_url}")
-
 
 def write_csv(filename: str, data: list[dict[str, str]]):
     with open(filename, 'w', newline='') as csvfile:
