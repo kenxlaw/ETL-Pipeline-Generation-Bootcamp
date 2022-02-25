@@ -29,7 +29,7 @@ def lambda_handler(event, context):
 
     results = extract_and_transform.transform(file_path)
 
-    sqs = boto3.resource('sqs')
+    sqs = boto3.client('sqs')
 
     send_file(s3, sqs, results["products_data"], "products", file_name.rsplit('.', 1)[0] + "_products.csv")
     send_file(s3, sqs, results["order_products_data"], "order_products", file_name.rsplit('.', 1)[0] + "_baskets.csv")
