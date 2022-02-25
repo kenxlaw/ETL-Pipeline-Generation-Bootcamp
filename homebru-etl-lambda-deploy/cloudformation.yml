@@ -85,6 +85,7 @@ Resources:
         LambdaConfigurations:
           - Event: s3:ObjectCreated:*
             Function: !GetAtt ETLambdaFunction.Arn
+            Function: !GetAtt BackupLambdaFunction.Arn
   CafeDataBucketPermission:
     Type: AWS::Lambda::Permission
     Properties:                                 
@@ -102,7 +103,7 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref BackupLambdaFunction
       Principal: s3.amazonaws.com
-      SourceArn: "arn:aws:s3:::homebru-cafe-data-bucket"
+      SourceArn: "arn:aws:s3:::homebru-cafe-data-backup-bucket"
   LambdaFunctionRole:
     Type: AWS::IAM::Role
     Properties:
