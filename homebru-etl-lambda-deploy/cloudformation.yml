@@ -82,11 +82,12 @@ Resources:
     Properties:
       BucketName: homebru-cafe-data-bucket
       NotificationConfiguration:
-        LambdaConfigurations:
-          - Event: s3:ObjectCreated:Put
-            Function: !GetAtt BackupLambdaFunction.Arn
+        LambdaConfigurations1:
           - Event: s3:ObjectCreated:*
             Function: !GetAtt ETLambdaFunction.Arn
+        LambdaConfigurations2:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt BackupLambdaFunction.Arn
   CafeDataBucketPermission:
     Type: AWS::Lambda::Permission
     Properties:                                 
