@@ -47,6 +47,16 @@ Resources:
       Enabled: true
       EventSourceArn: !GetAtt LoadQueue.Arn
       FunctionName: !GetAtt LoadLambdaFunction.Arn
+  BackupLambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      ReservedConcurrentExecutions: 1
+      FunctionName: !Sub ${NamePrefix}-backup-lambda
+      Runtime: python3.9
+      Timeout: 300
+      Handler: app/homebru_backup_lambda.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Code: .deployment/lambda-package.zip
   LoadQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -80,6 +90,17 @@ Resources:
     Properties:                                 
       Action: lambda:InvokeFunction
       FunctionName: !Ref ETLambdaFunction
+      Principal: s3.amazonaws.com
+      SourceArn: "arn:aws:s3:::homebru-cafe-data-bucket"
+  CafeDataBackupBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: homebru-cafe-data-backup-bucket
+  CafeDataBackupBucketPermission:
+    Type: AWS::Lambda::Permission
+    Properties:                                 
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref BackupLambdaFunction
       Principal: s3.amazonaws.com
       SourceArn: "arn:aws:s3:::homebru-cafe-data-bucket"
   LambdaFunctionRole:
@@ -126,4 +147,5 @@ Resources:
               'arn:aws:s3:::homebru-cafe-data-bucket',
               'arn:aws:s3:::homebru-cafe-data-bucket/*',
               'arn:aws:s3:::homebru-cafe-transformed-data-bucket/*',
+              'arn.aws:s3:::homebru-cafe-data-backup-bucket/*'
             ]
