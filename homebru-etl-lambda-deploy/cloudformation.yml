@@ -67,10 +67,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: homebru-cafe-transformed-data-bucket
-      # NotificationConfiguration: # Not sure if we need this entire part or not, idk
-      #   LambdaConfigurations:
-      #     - Event: s3:ObjectCreated:*
-      #       Function: !GetAtt LoadLambdaFunction.Arn
   CafeDataBucket:
     Type: AWS::S3::Bucket
     Properties:
