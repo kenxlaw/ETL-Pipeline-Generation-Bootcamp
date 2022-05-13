@@ -1,4 +1,4 @@
-# ETL Pipeline Project [Python3, Pandas, AWS, PostgreSQL, Grafana]
+# ETL Pipeline Project 
 
 <p align="left">
     <img src="https://i.redd.it/30ei98soetj61.jpg" width="100"/>
