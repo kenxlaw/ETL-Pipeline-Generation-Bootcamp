@@ -35,8 +35,8 @@ Using agile methodolgy we assigned priority and difficulty of task [story points
 
 The early draft of our ETL project consisted of pushing our data on a locally hosted database. Using PostgreSQL to query and manipulate tables. This would provide the a local perspective to how the ETL project would function before we moved on to AWS for our final iteration of the the pipeline. An example of our schema for our 'HomeBru' project looked like this, we aimed for a 2NF format.
 
-<p align="left">
-    <img src="Images/schema.png" width="600"/>
+<p align="center">
+    <img src="Images/schema.png" width="500"/>
 </p>
 
 ## Structure
@@ -51,7 +51,7 @@ The simple overview of the planned process can be seen here:
 
 Amazon Web Services is at the core of our ETL pipeline for how we dropped data, [.csv files] into buckets that would automatically go through transformation with our lambda. The cloudformation process and EC2 for hosting the site were all thanks to AWS ability to scale and process the data through connected services. Additional functions includeded managing permission for who could access the database, and SQS for automated messaging within the AWS enviroment to ensure that we could verify when data was successfully queried.
 
-<p align="left">
+<p align="center">
     <img src="Images/buckets.png" width="600"/>
     <img src="Images/lambda.png" width="600"/>
 </p>
@@ -121,6 +121,8 @@ Grafana plugins for visualisation includes:
 for pulling data from AWS
 - [Cloudwatch](https://grafana.com/docs/grafana/latest/datasources/aws-cloudwatch/) for Lambda / EC2 Metrics
 
+Python3, Pandas and Git were also used.
+
 ## Conclusion
 
-This was a successful 6-week group project where we started the ETL process from scratch. Initially using Python3 and Pandas to Extract and Transform before loading on to a PostgreSQL database. The initial process prepared us for a successful ETL pipeline when faced with AWS and Grafana to present to our clients. We worked towards within our weekly stretches and managed to finish the pipeline within the necessary deadline. The end result: A functional and presentable ETL pipeline. 
+This was a successful 6-week group project where we started the ETL process from scratch. Initially using Python3 and Pandas to Extract and Transform before loading on to a PostgreSQL database. The initial process prepared us for a ETL pipeline when faced with AWS and Grafana to present to our clients. We worked towards within our weekly stretches and managed to finish the pipeline within the necessary deadline. The end result: A functional and presentable ETL pipeline. 
