@@ -49,7 +49,7 @@ The simple overview of the planned process can be seen here:
 
 ## AWS
 
-Amazon Web Services is at the core of our ETL pipeline for how we dropped data, [.csv files] into buckets that would automatically go through transformation with our lambda. The cloudformation process and EC2 for hosting the site were all thanks to AWS ability to scale and process the data through connected services. Additional functions includeded managing permission for who could access the database, and SQS for automated messaging within the AWS enviroment to ensure that we could verify when data was successfully queried.
+Amazon Web Services is at the core of our ETL pipeline for how we dropped data, [.csv files] into buckets that would automatically go through transformation with our lambda. The cloudformation process and EC2 for hosting the site were all thanks to AWS ability to scale and process the data through connected services. Additional functions included managing permission for who could access the database using SSM. We used SQS for automated messaging within the AWS environment to ensure that we could verify when data was successfully queried.
 
 <p align="center">
     <img src="Images/buckets.png" width="600"/>
